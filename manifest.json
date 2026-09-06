@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "STOP X AI",
+  "version": "0.3.0",
+  "description": "Collapses AI-related posts on X",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://www.x.com/*",
+        "https://twitter.com/*",
+        "https://www.twitter.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
