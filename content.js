@@ -34,7 +34,7 @@
     // OpenAI
     'OpenAI', 'Open AI',
     'ChatGPT', 'Chat GPT', 'GPT*',
-    'Codex', 'Sora',
+    'Codex', 'Sora', 'Astra', 'Астра', 'Сказка 5.1',
     'DALL-E', 'DALL·E', 'DALL E',
     'o1-mini', 'o1-preview', 'o1-pro',
     'o3-mini', 'o3-pro', 'o4-mini',
