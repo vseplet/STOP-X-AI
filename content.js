@@ -246,41 +246,68 @@
     .no-ai-notice button:focus-visible { outline:2px solid #1d9bf0; outline-offset:2px; }
   `;
   document.documentElement.append(style);
+
   const states = new WeakMap();
+  const opened = new Set();
 
   function filter(article) {
     const text = [...article.querySelectorAll(
       '[data-testid="tweetText"], [data-testid="User-Name"]'
-    )].map(node => node.innerText || node.textContent).join('\n');
-    const permalink = article.querySelector('time')?.closest('a')?.getAttribute('href') || '';
-    const key = permalink + '\n' + text;
+    )].map(node => node.textContent).join('\n');
+
+    const permalink = article.querySelector('time')
+      ?.closest('a')?.getAttribute('href') || '';
+
+    const id = permalink.match(/\/status\/(\d+)/)?.[1];
+    const key = id || [...article.querySelectorAll(
+      '[data-testid="tweetText"]'
+    )].map(node => node.textContent).join('\n') || text;
+
     const previous = states.get(article);
     const notice = article.querySelector(':scope > .no-ai-notice');
-    // Keep manually opened posts open; rebuild placeholders if X removes them.
-    if (previous?.key === key && (previous.open || !previous.reason || notice)) return;
+
+    // Our own DOM changes must never collapse an opened post.
+    if (opened.has(key)) {
+      article.removeAttribute('data-no-ai-folded');
+      notice?.remove();
+      return;
+    }
+
+    if (
+      previous?.key === key &&
+      previous.text === text &&
+      (!previous.reason || notice)
+    ) return;
+
     article.removeAttribute('data-no-ai-folded');
     notice?.remove();
+
     const reason = match(text, rules);
-    const state = {key, reason, open: false};
-    states.set(article, state);
+    states.set(article, { key, text, reason });
+
     if (!reason) return;
 
     const placeholder = document.createElement('div');
     placeholder.className = 'no-ai-notice';
+
     const label = document.createElement('span');
     label.textContent = 'AI post hidden';
     label.title = 'Matched keyword: ' + reason;
+
     const button = document.createElement('button');
     button.type = 'button';
     button.textContent = 'Open shit';
     button.setAttribute('aria-label', 'Open hidden AI post');
+
     button.addEventListener('click', event => {
       event.preventDefault();
       event.stopPropagation();
-      state.open = true;
+
+      opened.add(key);
       article.removeAttribute('data-no-ai-folded');
       placeholder.remove();
     });
+
     placeholder.append(label, button);
     article.setAttribute('data-no-ai-folded', 'true');
     article.append(placeholder);
