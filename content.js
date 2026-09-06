@@ -76,6 +76,7 @@
     'Hunyuan*', 'ERNIE Bot',
     'GigaChat*', 'гигачат*',
     'YandexGPT*', 'ЯндексGPT*', 'яндекс гпт',
+    'DLSS', 'DLSS5',
 
     // AI coding tools
     'GitHub Copilot', 'GitHubCopilot',
